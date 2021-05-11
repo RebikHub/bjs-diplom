@@ -30,3 +30,22 @@ userMoney.addMoneyCallback = (data) => {
     });
 };
 
+userMoney.conversionMoneyCallback = (data) => {
+    return ApiConnector.convertMoney(data, (response) => {
+        if (response.success === false) {
+            return userMoney.setMessage(response.success, response.error);
+        };
+        ProfileWidget.showProfile(response.data);
+        return userMoney.setMessage(response.success, 'ok!'); 
+    });
+};
+
+userMoney.sendMoneyCallback = (data) => {
+    return ApiConnector.transferMoney(data, (response) => {
+        if (response.success === false) {
+            return userMoney.setMessage(response.success, response.error);
+        };
+        ProfileWidget.showProfile(response.data);
+        return userMoney.setMessage(response.success, 'ok!'); 
+    });
+};
