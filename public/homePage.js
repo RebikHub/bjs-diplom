@@ -73,3 +73,14 @@ userFavorites.addUserCallback = (data) => {
     });
 };
 
+userFavorites.removeUserCallback = (id) => {
+    return ApiConnector.removeUserFromFavorites(id, (response) => {
+        if (response.success === false) {
+            return userFavorites.setMessage(response.success, response.error);
+        };
+        userFavorites.clearTable();
+        userFavorites.fillTable(response.data);
+        usersMoney.updateUsersList(response.data);
+        return userFavorites.setMessage(response.success, 'ok!');
+    });
+};
