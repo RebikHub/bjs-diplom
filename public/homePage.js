@@ -2,7 +2,8 @@
 
 const logoutBtn = new LogoutButton;
 const currentRates = new RatesBoard;
-const userMoney = new MoneyManager;
+const usersMoney = new MoneyManager;
+const userFavorites = new FavoritesWidget;
 
 logoutBtn.action = () => ApiConnector.logout(() => location.reload());
 
@@ -20,32 +21,55 @@ ApiConnector.getStocks(data => {
     return currentRates.fillTable(data.data);
 });
 
-userMoney.addMoneyCallback = (data) => {
+usersMoney.addMoneyCallback = (data) => {
     return ApiConnector.addMoney(data, (response) => {
         if (response.success === false) {
-            return userMoney.setMessage(response.success, response.error);
+            return usersMoney.setMessage(response.success, response.error);
         };
         ProfileWidget.showProfile(response.data);
-        return userMoney.setMessage(response.success, 'ok!'); 
+        return usersMoney.setMessage(response.success, 'ok!'); 
     });
 };
 
-userMoney.conversionMoneyCallback = (data) => {
+usersMoney.conversionMoneyCallback = (data) => {
     return ApiConnector.convertMoney(data, (response) => {
         if (response.success === false) {
-            return userMoney.setMessage(response.success, response.error);
+            return usersMoney.setMessage(response.success, response.error);
         };
         ProfileWidget.showProfile(response.data);
-        return userMoney.setMessage(response.success, 'ok!'); 
+        return usersMoney.setMessage(response.success, 'ok!'); 
     });
 };
 
-userMoney.sendMoneyCallback = (data) => {
+usersMoney.sendMoneyCallback = (data) => {
     return ApiConnector.transferMoney(data, (response) => {
         if (response.success === false) {
-            return userMoney.setMessage(response.success, response.error);
+            return usersMoney.setMessage(response.success, response.error);
         };
         ProfileWidget.showProfile(response.data);
-        return userMoney.setMessage(response.success, 'ok!'); 
+        return usersMoney.setMessage(response.success, 'ok!'); 
     });
 };
+
+ApiConnector.getFavorites(response => {
+    if (response.success === false) {
+        return userFavorites.setMessage(response.success, response.error);
+    };
+    userFavorites.clearTable();
+    userFavorites.fillTable(response.data);
+    usersMoney.updateUsersList(response.data);
+    return;
+});
+
+userFavorites.addUserCallback = (data) => {
+    return ApiConnector.addUserToFavorites(data, (response) => {
+        if (response.success === false) {
+            return userFavorites.setMessage(response.success, response.error);
+        };
+        userFavorites.clearTable();
+        userFavorites.fillTable(response.data);
+        usersMoney.updateUsersList(response.data);
+        return userFavorites.setMessage(response.success, 'ok!');
+    });
+};
+
