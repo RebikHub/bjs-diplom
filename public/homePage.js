@@ -8,10 +8,10 @@ const userFavorites = new FavoritesWidget;
 logoutBtn.action = () => ApiConnector.logout(() => location.reload());
 
 ApiConnector.current(response => {
-    if (response.success === true) {
-        return ProfileWidget.showProfile(response.data);
+    if (response.success === false) {
+        return ProfileWidget.showProfile(response.error);
     };
-    return alert(response.error);
+    return ProfileWidget.showProfile(response.data);
 });
 
 ApiConnector.getStocks(data => {
@@ -19,7 +19,15 @@ ApiConnector.getStocks(data => {
         return data.error;
     };
     return currentRates.fillTable(data.data);
-});
+})
+
+setInterval(() => ApiConnector.getStocks(data => {
+    if (data.success === false) {
+        return data.error;
+    };
+    currentRates.clearTable();
+    return currentRates.fillTable(data.data);
+}), 60000);
 
 usersMoney.addMoneyCallback = (data) => {
     return ApiConnector.addMoney(data, (response) => {
